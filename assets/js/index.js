@@ -1,7 +1,77 @@
+// functions
+function buildQuiz() {
+    // variable to store the HTML output
+    const output = [];
+
+    // for each question...
+    leQuestions.forEach( (currentQuestion, questionNumber) => {
+        
+        // variable to store the list of answer choices
+        const answers = [];
+
+        // for each available answer...
+        for(letter in currentQuestion.answers) {
+            
+            // ...add an HTML radio button
+            answers.push(
+                `<label>
+                    <input type='radio' name='question${questionNumber}' value='${letter}'>
+                    ${letter} :
+                    ${currentQuestion.answers[letter]}
+                </label>`
+            );
+        }
+
+        // add this question and its answers to the output
+        output.push(
+            `<div class='question'> ${currentQuestion.question} </div>
+            <div class='answers'> ${answers.join('')} </div>`
+        );
+    });
+
+    // finally combine our output list into one string of HTML and put it on the page
+    quizContainer.innerHTML = output.join('');
+};
+
+function showResults(){
+    
+    // gather answer containers from the quiz
+    const answerContainers = quizContainer.querySelectAll('answer');
+
+    // keep track of user's answers
+    let numCorrect = 0;
+
+    // for each question...
+    leQuestions.forEach( (currentQuestion, questionNumber) => {
+
+        // find select answer
+        const answerContainer = answerContainers[questionNumber];
+        const selector = `input[name=question${questionNumber}]:checked`;
+        const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+
+        // if answer is correct
+        if(userAnswer === currentQuestion.correctAnswer) {
+            // add to the number of correct answers
+            numCorrect++
+
+            // color the answers green
+            answerContainers[questionNumber].style.color = 'lightgreen';
+        }
+        // if answer is wrong or blank
+        else {
+            // color the answers red
+            answerContainers[questionNumber].style.color = 'red';
+        }
+    });
+
+    // show number of correct answers out of total
+    resultsContainer.innerHTML = `${numCorrect} out of ${leQuestions.length}`;
+};
+
+// variables
 const quizContainer = document.getElementById('quiz');
 const resultsContainer = document.getElementById('results');
 const submitBtn = document.getElementById('submit');
-
 const leQuestions = [
     {
         question: 'Who invented JavaScript?',
@@ -29,7 +99,7 @@ const leQuestions = [
             c: 'ESLint'
         },
         correctAnswer: 'c'
-    }
+    },
     {
         question: 'What is the correct way to write "Hello World" in an alert box?',
         answers: {
@@ -68,11 +138,8 @@ const leQuestions = [
     }
 ];
 
-function buildQuiz() {};
-
-function showResults(){};
-
 // display quiz
 buildQuiz();
 
+// event listeners
 submitBtn.addEventListener('click', showResults);
