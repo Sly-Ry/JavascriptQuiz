@@ -1,7 +1,7 @@
 // IIFE (immediately invoked function expression)
 (function(){
-    
     // functions
+
     function buildQuiz() {
         
         // variable to store the HTML output
@@ -28,8 +28,10 @@
 
             // add this question and its answers to the output
             output.push(
-                `<div class='question'> ${currentQuestion.question} </div>
-                <div class='answers'> ${answers.join('')} </div>`
+                `<div class='slide'>
+                    <div class='question'> ${currentQuestion.question} </div>
+                    <div class='answers'> ${answers.join('')} </div>
+                </div>`
             );
         });
 
@@ -70,6 +72,40 @@
 
         // show number of correct answers out of total
         resultsContainer.innerHTML = `${numCorrect} out of ${leQuestions.length}`;
+    };
+
+    function showSlide(n) {
+
+        // hide all slides except the nth slide
+        slides[currentSlide].classList.remove('active-slide');
+        slides[n].classList.add('active-slide');
+        currentSlide = n;
+        
+        // if its the first slide, hide the back button
+        if (currentSlide === 0){
+            previousButton.style.display = 'none';
+        }
+        else {
+            previousButton.style.display = 'inline-block';
+        }
+
+        // if its the last slide, hide the next button
+        if (currentSlide === slides.length-1){
+            nextButton.style.display = 'none';
+            submitButton.style.display = 'inline-block';
+        }
+        else {
+            nextButton.style.display = 'inline-block';
+            submitButton.style.display = 'none';
+        }
+    };
+
+    function showNextSlide() {
+        showSlide(currentSlide + 1);
+    };
+    
+    function showPreviousSlide() {
+        showSlide(currentSlide - 1);
     };
 
     // variables
@@ -145,6 +181,24 @@
     // display quiz
     buildQuiz();
 
+    // function start() {
+    //     startButton.onclick(buildQuiz());
+    // }
+
+    // pagination
+    const startButton = document.getElementById('start-btn');
+    const previousButton = document.getElementById('previous');
+    const nextButton = document.getElementById('next');
+    const slides = document.querySelectorAll('.slide');
+    let currentSlide = 0;
+
+    // show the first slide
+    // showSlide(currentSlide);
+    startButton.addEventListener('click', showSlide(currentSlide));
+    
     // event listeners
     submitButton.addEventListener('click', showResults);
+    previousButton.addEventListener('click', showPreviousSlide);
+    nextButton.addEventListener('click', showNextSlide);
+   
 })();
